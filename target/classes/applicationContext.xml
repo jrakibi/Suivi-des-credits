@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.1.xsd">
+	<!-- Beans needed -->	
+				
+	<bean id="AdmindaoImpl" class="com.gestion.credits.dao.AdminDaoImpl" />	
+	<bean id="Adminmetier" class="com.gestion.credits.metier.AdminMetier">
+		<property name="dao" ref="AdmindaoImpl" /> 
+	</bean> 
+	
+	<bean id="profdaoImpl" class="com.gestion.credits.dao.ProfDaoImpl" />
+	<bean id="Profmetier" class="com.gestion.credits.metier.ProfMetier">
+		<property name="dao" ref="profdaoImpl"></property>
+	</bean>
+	
+	<bean id="dashboard" class="com.gestion.credits.beans.Dashboard" scope="prototype" />
+	<bean id="applicationContextProvder" class="com.gestion.credits.beans.ApplicationContextProvider"/>
+	<bean id="professor" class="com.gestion.credits.entities.Professor" scope="prototype" />
+	<bean id="team" class="com.gestion.credits.entities.Team" scope="prototype" />
+	<bean id="rubric" class="com.gestion.credits.beans.Rubric" scope="prototype" />
+	<bean id="childrubric" class="com.gestion.credits.beans.Childrubric" scope="prototype" />
+	<bean id="project" class="com.gestion.credits.entities.Projects" scope="prototype" />
+	<bean id="r" class="com.gestion.credits.entities.Rubric" scope="prototype" />
+	<bean id="childrub" class="com.gestion.credits.entities.ChildRubric" scope="prototype" />
+	<bean id="log" class="com.gestion.credits.beans.Log" scope="prototype" />
+	<bean id="cnt" class="com.gestion.credits.entities.Contribution" scope="prototype" />
+		
+	<!-- Beans to get the entityManager object -->
+	<bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<property name="driverClassName" value="com.mysql.jdbc.Driver" />
+		<property name="url" value="jdbc:mysql://localhost:3306/Credits?useSSL=false&amp;serverTimezone=UTC" />
+		<property name="username" value="root" />
+		<property name="password" value="" />
+	</bean>
+	
+	<bean id="persistanceUnitManager" class="org.springframework.orm.jpa.persistenceunit.DefaultPersistenceUnitManager">
+		<property name="persistenceXmlLocations" >
+			<list>
+				<value>classpath*:META-INF/persistence.xml</value>
+			</list>
+		</property>
+		<property name="defaultDataSource" ref="dataSource" />
+	</bean>
+	
+	<bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+		<property name="persistenceUnitManager" ref="persistanceUnitManager" />
+		<property name="persistenceUnitName" value="punit" />
+	</bean>
+	
+	<bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
+		<property name="entityManagerFactory" ref="entityManagerFactory" />
+	</bean>
+	<tx:annotation-driven transaction-manager="transactionManager" /> <!-- enable the configuration of transactional behavior based on annotations @transactional -->
+	<context:annotation-config></context:annotation-config> <!-- is used to activate annotations in beans already registered in the application context @PersistanceContext -->
+	
+</beans>
